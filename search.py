@@ -17,7 +17,7 @@ In search.py, you will implement generic search algorithms which are called by
 Pacman agents (in searchAgents.py).
 """
 
-import util
+import util 
 
 class SearchProblem:
     """
@@ -104,37 +104,49 @@ def nullHeuristic(state, problem=None):
     A heuristic function estimates the cost from the current state to the nearest
     goal in the provided SearchProblem.  This heuristic is trivial.
     """
+
     return 0
 
 def aStarSearch(problem, heuristic=nullHeuristic):
-    """Search the node that has the lowest combined cost and heuristic first."""
-    visitados = []
-    fronteira = util.PriorityQueue()
-    path = util.Queue()
-    sucessores = util.Queue()
-    estado_atual = problem.getStartState()
-    fronteira.push(estado_atual,0)
-    #print(util.manhattanDistance( fronteira.pop(), (1,1) ))
-    #print(fronteira.pop())
-    while(fronteira.isEmpty() == False):    	
-    	sucessores.push(problem.getSuccessors(estado_atual))
-    	if(problem.isGoalState(estado_atual)):
-    		return path
-    	print(list(sucessores.get()))	
-    	#for x in list(sucessores.queue()):
-    		#print(x)
-    		#if item not in visitados:
-				#fronteira.push(item,util.manhattanDistance( item[0][0], (1,1) ))
-    	
-    	nextNo = fronteira.pop()
-    	visitados.append(nextNo)
-    	estado_atual = nextNo
-    	print(nextNo)
+	
+    visitados = [] #Armazena (Estado,Custo)
+    EstadoInicial = problem.getStartState()
+    NoInicial = (EstadoInicial, [], 0) #(Estado,Acao, Custo)
+    fronteira = util.PriorityQueue() #fila com prioridade
+    fronteira.push(NoInicial, 0) 
+    while not fronteira.isEmpty():
+        #Armazena o estado atual as acoes e custo atual para o proximo no.
+        EstadoAtual, acoes, CustoAtual = fronteira.pop()
+        NoAtual = (EstadoAtual, CustoAtual)
+        visitados.append((EstadoAtual, CustoAtual))
+        #Se encontrou objetivo retorna lista de acoes
+        if problem.isGoalState(EstadoAtual):
+            return acoes
+        
+        #Lista de filhos na forma (filho, acaoFilho, CustoAcao)
+        filhos = problem.getSuccessors(EstadoAtual)
+        #Para cada filho
+        for filhosEstado, filhosAcoes, filhosCustos in filhos:
+        	#Atualiza Custo e acao
+            NovaAcao = acoes + [filhosAcoes]
+            NovoCusto = problem.getCostOfActions(NovaAcao)
+            NovoNo = (filhosEstado, NovaAcao, NovoCusto)
+            visitado = False #VErifica se ja foi visitado
+            for explorado in visitados:
+                #Armazena estado visitado e custo visitado
+                EstadoVisitado, CustoVisitado = explorado
 
-    
+                if (filhosEstado == EstadoVisitado) and (NovoCusto >= CustoVisitado):
+                	visitado = True
+
+            #COLOCA NA fronteira caso nao tenha sido visitado ainda.
+            if not visitado:
+            	#Coloca na fronteira com o  custo dos nós carregados + heuristica
+                fronteira.push(NovoNo, NovoCusto + heuristic(filhosEstado, problem))
+                visitados.append((filhosEstado, NovoCusto))
+    return 0
+
     util.raiseNotDefined()
-    
-
 
 
 # Abbreviations
