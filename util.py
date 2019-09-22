@@ -30,6 +30,7 @@ import sys
 import inspect
 import heapq, random
 import cStringIO
+import random
 
 
 class FixedRandom:

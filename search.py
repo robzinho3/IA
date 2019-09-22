@@ -17,7 +17,8 @@ In search.py, you will implement generic search algorithms which are called by
 Pacman agents (in searchAgents.py).
 """
 
-import util 
+import util
+import random
 
 class SearchProblem:
     """
@@ -104,8 +105,13 @@ def nullHeuristic(state, problem=None):
     A heuristic function estimates the cost from the current state to the nearest
     goal in the provided SearchProblem.  This heuristic is trivial.
     """
-
     return 0
+def heuristica_manhatam(state, problem=None): #manhatam
+	return abs(state[0]-1)+abs(state[1] - 1)
+def heuristica_FastConvergence(state, problem=None):
+	return 1/(abs(state[0]-1)+abs(state[1]-1) + 0.001)#inverso da distancia
+def heuristica_prob(state,problem=None):
+	return random.randint(0,abs(state[0]-1)+abs(state[1]-1)) #probabilistica
 
 def aStarSearch(problem, heuristic=nullHeuristic):
 	
@@ -113,7 +119,9 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     EstadoInicial = problem.getStartState()
     NoInicial = (EstadoInicial, [], 0) #(Estado,Acao, Custo)
     fronteira = util.PriorityQueue() #fila com prioridade
-    fronteira.push(NoInicial, 0) 
+    fronteira.push(NoInicial, 0)
+
+    #print(problem.getPacmanState()) 
     while not fronteira.isEmpty():
         #Armazena o estado atual as acoes e custo atual para o proximo no.
         EstadoAtual, acoes, CustoAtual = fronteira.pop()
@@ -131,23 +139,21 @@ def aStarSearch(problem, heuristic=nullHeuristic):
             NovaAcao = acoes + [filhosAcoes]
             NovoCusto = problem.getCostOfActions(NovaAcao)
             NovoNo = (filhosEstado, NovaAcao, NovoCusto)
-            visitado = False #VErifica se ja foi visitado
+            visitado = False #label de visitado
             for explorado in visitados:
                 #Armazena estado visitado e custo visitado
                 EstadoVisitado, CustoVisitado = explorado
-
+                #verifica se ja foi visitado e se o custo dele e maior que o existente.
                 if (filhosEstado == EstadoVisitado) and (NovoCusto >= CustoVisitado):
                 	visitado = True
 
             #COLOCA NA fronteira caso nao tenha sido visitado ainda.
             if not visitado:
-            	#Coloca na fronteira com o  custo dos nós carregados + heuristica
+            	#Coloca na fronteira com o  custo dos nos carregados + heuristica
                 fronteira.push(NovoNo, NovoCusto + heuristic(filhosEstado, problem))
                 visitados.append((filhosEstado, NovoCusto))
     return 0
-
     util.raiseNotDefined()
-
 
 # Abbreviations
 bfs = breadthFirstSearch

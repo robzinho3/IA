@@ -136,7 +136,6 @@ class GameState:
     def getPacmanState( self ):
         """
         Returns an AgentState object for pacman (in game.py)
-
         state.pos gives the current position
         state.direction gives the travel vector
         """
