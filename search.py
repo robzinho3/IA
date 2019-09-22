@@ -108,10 +108,27 @@ def nullHeuristic(state, problem=None):
     return 0
 def heuristica_manhatam(state, problem=None): #manhatam
 	return abs(state[0]-1)+abs(state[1] - 1)
+
 def heuristica_FastConvergence(state, problem=None):
 	return 1/(abs(state[0]-1)+abs(state[1]-1) + 0.001)#inverso da distancia
+
 def heuristica_prob(state,problem=None):
 	return random.randint(0,abs(state[0]-1)+abs(state[1]-1)) #probabilistica
+
+def min_manhatam(state, problem=None): #manhatam
+	return max([abs(state[0]-1), abs(state[1] - 1)])
+
+def euclidean_manhattam(state, problem=None):
+    X = (state[0] - 1)**2
+    Y = (state[1] - 1)**2
+    return (X + Y)**0.5
+
+def euc_man(state, problem=None):
+    X = (state[0] - 1)**2
+    Y = (state[1] - 1)**2
+    euc = (X + Y)**0.5
+    man = max([abs(state[0]-1), abs(state[1] - 1)])
+    return 0.5*(euc + man)
 
 def aStarSearch(problem, heuristic=nullHeuristic):
 	
