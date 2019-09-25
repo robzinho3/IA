@@ -106,50 +106,51 @@ def nullHeuristic(state, problem=None):
     goal in the provided SearchProblem.  This heuristic is trivial.
     """
     return 0
-def heuristica_manhatam(state, problem=None): #manhatam
-	return abs(state[0]-1)+abs(state[1] - 1)
 
-def heuristica_FastConvergence(state, problem=None):
-	return 1/(abs(state[0]-1)+abs(state[1]-1) + 0.001)#inverso da distancia
+def heuristica_manhattan(state, problem=None): #manhatam
+	return abs(state[0]-problem.goal[0])+abs(state[1] - problem.goal[1])
+
+def inverse_heuristica_manhattan(state, problem=None): #exemplo de heuristica ruim
+    return 1.0/(abs(state[0]-problem.goal[0])+abs(state[1] - problem.goal[1]) + 1)
 
 def heuristica_prob(state,problem=None):
 	return random.randint(0,abs(state[0]-1)+abs(state[1]-1)) #probabilistica
 
-def min_manhatam(state, problem=None): #manhatam
-	return max([abs(state[0]-1), abs(state[1] - 1)])
+def min_manhattan(state, problem=None): #manhatam
+	return min([abs(state[0]-problem.goal[0]), abs(state[1] - problem.goal[1])])
+
+def max_manhattan(state, problem=None): #manhatam
+	return max([abs(state[0]-problem.goal[0]), abs(state[1] - problem.goal[1])])
+
+def max_manhattan_nao_admissivel(state, problem=None): #manhatam nao admissivel
+	return 10*max([abs(state[0]-problem.goal[0]), abs(state[1] - problem.goal[1])])
 
 def euclidean_manhattam(state, problem=None):
-    X = (state[0] - 1)**2
-    Y = (state[1] - 1)**2
+    X = (state[0] - problem.goal[0])**2
+    Y = (state[1] - problem.goal[1])**2
     return (X + Y)**0.5
 
-def euc_man(state, problem=None):
-    X = (state[0] - 1)**2
-    Y = (state[1] - 1)**2
-    euc = (X + Y)**0.5
-    man = max([abs(state[0]-1), abs(state[1] - 1)])
-    return 0.5*(euc + man)
-
 def aStarSearch(problem, heuristic=nullHeuristic):
-	
     visitados = [] #Armazena (Estado,Custo)
     EstadoInicial = problem.getStartState()
-    NoInicial = (EstadoInicial, [], 0) #(Estado,Acao, Custo)
+    NoInicial = (EstadoInicial, [], 0) #(Estado,Acao, Custo)Astar
     fronteira = util.PriorityQueue() #fila com prioridade
     fronteira.push(NoInicial, 0)
 
-    #print(problem.getPacmanState()) 
+    
     while not fronteira.isEmpty():
         #Armazena o estado atual as acoes e custo atual para o proximo no.
         EstadoAtual, acoes, CustoAtual = fronteira.pop()
         NoAtual = (EstadoAtual, CustoAtual)
         visitados.append((EstadoAtual, CustoAtual))
+
         #Se encontrou objetivo retorna lista de acoes
         if problem.isGoalState(EstadoAtual):
             return acoes
         
         #Lista de filhos na forma (filho, acaoFilho, CustoAcao)
         filhos = problem.getSuccessors(EstadoAtual)
+        
         #Para cada filho
         for filhosEstado, filhosAcoes, filhosCustos in filhos:
         	#Atualiza Custo e acao
@@ -160,6 +161,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
             for explorado in visitados:
                 #Armazena estado visitado e custo visitado
                 EstadoVisitado, CustoVisitado = explorado
+
                 #verifica se ja foi visitado e se o custo dele e maior que o existente.
                 if (filhosEstado == EstadoVisitado) and (NovoCusto >= CustoVisitado):
                 	visitado = True
