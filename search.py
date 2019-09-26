@@ -133,31 +133,36 @@ def euc_nao_admissivel(state, problem=None):
 #   As heuristicas abaixo foram comparadas em busca da melhor solucao
 #   nos mapas bigMaze, mediumMaze e smallMaze
 #
-#   Apesar do desempenho marginalmente melhor de linear_euc_man,
+#   Apesar do desempenho marginalmente melhor de convex_euc_man,
 #   consideramos a heuristica manhattan como a melhor opcao, pois, com
 #   base na teoria de A* e na estrutura do pacman, espera-se que essa
-#   heuristica tenha generalizacao melhor do que linear_euc_man
+#   heuristica tenha generalizacao melhor do que convex_euc_man
 #***********************************************************************    
 
-def manhattan(state, problem=None): #manhatam
+def manhattan(state, problem=None): 
+    # Distancia Manhatan, retorna |dx| + |dy|
 	return abs(state[0]-problem.goal[0])+abs(state[1] - problem.goal[1])
 
 def euclidean(state, problem=None):
+    # Distancia Euclidiana
     X = (state[0] - problem.goal[0])**2
     Y = (state[1] - problem.goal[1])**2
     return (X + Y)**0.5
 
-def min_manhattan(state, problem=None): #manhatam
+def min_manhattan(state, problem=None): 
+    # Retorna o componente minimo da Distancia Manhatan
 	return min([abs(state[0]-problem.goal[0]), abs(state[1] - problem.goal[1])])
 
-def max_manhattan(state, problem=None): #manhatam
+def max_manhattan(state, problem=None):
+    # Retorna o componente maximo da Distancia Manhatan
 	return max([abs(state[0]-problem.goal[0]), abs(state[1] - problem.goal[1])])
 
-def linear_euc_man(state, problem=None):
-    import math
+def convex_euc_man(state, problem=None):
+    # Retorna uma combinacao convexa entre as distancias euclidiana e manhattan
+    # Requer importacao do modulo math
     X = (state[0] - problem.goal[0])**2
     Y = (state[1] - problem.goal[1])**2
-    E = math.floor((X+Y)**0.5)
+    E = (X+Y)**0.5
     M = abs(state[0] - problem.goal[0]) + abs(state[1] - problem.goal[1])
     return M*0.8 + E*0.2
 
@@ -166,10 +171,12 @@ def linear_euc_man(state, problem=None):
 #===========================================================================
 
 def aStarSearch(problem, heuristic=nullHeuristic):
+    #Neste codigo, utilizamos fila de prioridade, que e o padrao no A*
+
     visitados = [] #Armazena (Estado,Custo)
-    EstadoInicial = problem.getStartState()
-    NoInicial = (EstadoInicial, [], 0) #(Estado,Acao, Custo)Astar
-    fronteira = util.PriorityQueue() #fila com prioridade
+    EstadoInicial = problem.getStartState() #Armazena o Estado Inicial
+    NoInicial = (EstadoInicial, [], 0) #(Estado,Acao, Custo) de A*
+    fronteira = util.PriorityQueue() #Fila de prioridade oficial da implementacao de UC Berkeley
     fronteira.push(NoInicial, 0)
     
     while not fronteira.isEmpty():
@@ -200,13 +207,12 @@ def aStarSearch(problem, heuristic=nullHeuristic):
                 if (filhosEstado == EstadoVisitado) and (NovoCusto >= CustoVisitado):
                 	visitado = True
 
-            #COLOCA NA fronteira caso nao tenha sido visitado ainda.
+            #Coloca NA fronteira caso nao tenha sido visitado ainda.
             if not visitado:
             	#Coloca na fronteira com o  custo dos nos carregados + heuristica
                 fronteira.push(NovoNo, NovoCusto + heuristic(filhosEstado, problem))
                 visitados.append((filhosEstado, NovoCusto))
     return 0
-    util.raiseNotDefined()
 
 # Abbreviations
 bfs = breadthFirstSearch
