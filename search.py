@@ -100,6 +100,10 @@ def uniformCostSearch(problem):
     "*** YOUR CODE HERE ***"
     util.raiseNotDefined()
 
+#===========================================================================
+# Heuristicas para Busca A*
+#===========================================================================
+
 def nullHeuristic(state, problem=None):
     """
     A heuristic function estimates the cost from the current state to the nearest
@@ -107,14 +111,41 @@ def nullHeuristic(state, problem=None):
     """
     return 0
 
-def heuristica_manhattan(state, problem=None): #manhatam
+#***********************************************************************
+# Heuristicas Nao Admissiveis
+#   As heuristicas abaixo foram implementadas para verificarmos problemas
+#   causados pela nao admissibilidade.
+#***********************************************************************
+
+def max_manhattan_nao_admissivel(state, problem=None):
+	return 10*max([abs(state[0]-problem.goal[0]), abs(state[1] - problem.goal[1])])
+
+def max_nao_admissivel(state, problem=None):
+    return 2*max([abs(state[0]-problem.goal[0]), abs(state[1] - problem.goal[1])])
+
+def euc_nao_admissivel(state, problem=None):
+    X = (state[0] - problem.goal[0])**2
+    Y = (state[1] - problem.goal[1])**2
+    return (X + Y)
+
+#***********************************************************************
+# Heuristicas Admissiveis
+#   As heuristicas abaixo foram comparadas em busca da melhor solucao
+#   nos mapas bigMaze, mediumMaze e smallMaze
+#
+#   Apesar do desempenho marginalmente melhor de linear_euc_man,
+#   consideramos a heuristica manhattan como a melhor opcao, pois, com
+#   base na teoria de A* e na estrutura do pacman, espera-se que essa
+#   heuristica tenha generalizacao melhor do que linear_euc_man
+#***********************************************************************    
+
+def manhattan(state, problem=None): #manhatam
 	return abs(state[0]-problem.goal[0])+abs(state[1] - problem.goal[1])
 
-def inverse_heuristica_manhattan(state, problem=None): #exemplo de heuristica ruim
-    return 1.0/(abs(state[0]-problem.goal[0])+abs(state[1] - problem.goal[1]) + 1)
-
-def heuristica_prob(state,problem=None):
-	return random.randint(0,abs(state[0]-1)+abs(state[1]-1)) #probabilistica
+def euclidean(state, problem=None):
+    X = (state[0] - problem.goal[0])**2
+    Y = (state[1] - problem.goal[1])**2
+    return (X + Y)**0.5
 
 def min_manhattan(state, problem=None): #manhatam
 	return min([abs(state[0]-problem.goal[0]), abs(state[1] - problem.goal[1])])
@@ -122,13 +153,17 @@ def min_manhattan(state, problem=None): #manhatam
 def max_manhattan(state, problem=None): #manhatam
 	return max([abs(state[0]-problem.goal[0]), abs(state[1] - problem.goal[1])])
 
-def max_manhattan_nao_admissivel(state, problem=None): #manhatam nao admissivel
-	return 10*max([abs(state[0]-problem.goal[0]), abs(state[1] - problem.goal[1])])
-
-def euclidean_manhattam(state, problem=None):
+def linear_euc_man(state, problem=None):
+    import math
     X = (state[0] - problem.goal[0])**2
     Y = (state[1] - problem.goal[1])**2
-    return (X + Y)**0.5
+    E = math.floor((X+Y)**0.5)
+    M = abs(state[0] - problem.goal[0]) + abs(state[1] - problem.goal[1])
+    return M*0.8 + E*0.2
+
+#===========================================================================
+# Implementacao da Busca A*
+#===========================================================================
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     visitados = [] #Armazena (Estado,Custo)
@@ -136,7 +171,6 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     NoInicial = (EstadoInicial, [], 0) #(Estado,Acao, Custo)Astar
     fronteira = util.PriorityQueue() #fila com prioridade
     fronteira.push(NoInicial, 0)
-
     
     while not fronteira.isEmpty():
         #Armazena o estado atual as acoes e custo atual para o proximo no.
