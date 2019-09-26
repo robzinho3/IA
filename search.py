@@ -112,21 +112,13 @@ def nullHeuristic(state, problem=None):
     return 0
 
 #***********************************************************************
-# Heuristicas Nao Admissiveis
-#   As heuristicas abaixo foram implementadas para verificarmos problemas
+# Heuristica Nao Admissivel (nao deve ser utilizada)
+#   A heuristica abaixo foi implementada para verificarmos problemas
 #   causados pela nao admissibilidade.
 #***********************************************************************
 
-def max_manhattan_nao_admissivel(state, problem=None):
+def nao_admissivel(state, problem=None):
 	return 10*max([abs(state[0]-problem.goal[0]), abs(state[1] - problem.goal[1])])
-
-def max_nao_admissivel(state, problem=None):
-    return 2*max([abs(state[0]-problem.goal[0]), abs(state[1] - problem.goal[1])])
-
-def euc_nao_admissivel(state, problem=None):
-    X = (state[0] - problem.goal[0])**2
-    Y = (state[1] - problem.goal[1])**2
-    return (X + Y)
 
 #***********************************************************************
 # Heuristicas Admissiveis
@@ -139,6 +131,7 @@ def euc_nao_admissivel(state, problem=None):
 #   heuristica tenha generalizacao melhor do que convex_euc_man
 #***********************************************************************    
 
+# Primeira Opcao (por generalizacao e perfomance)
 def manhattan(state, problem=None): 
     # Distancia Manhatan, retorna |dx| + |dy|
 	return abs(state[0]-problem.goal[0])+abs(state[1] - problem.goal[1])
@@ -157,6 +150,7 @@ def max_manhattan(state, problem=None):
     # Retorna o componente maximo da Distancia Manhatan
 	return max([abs(state[0]-problem.goal[0]), abs(state[1] - problem.goal[1])])
 
+# Segunda Opcao (por perfomance marginalmente superior em um labirinto)
 def convex_euc_man(state, problem=None):
     # Retorna uma combinacao convexa entre as distancias euclidiana e manhattan
     # Requer importacao do modulo math
